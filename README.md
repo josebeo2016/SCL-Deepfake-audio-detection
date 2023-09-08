@@ -1,6 +1,8 @@
 # SCL-Deepfake-audio-detection
 
-This is official implementation of our work "SYNTHETIC SPEECH DETECTION USING VOCODER SIGNATURE EXTRACTION"
+This is official implementation of our work **"SYNTHETIC SPEECH DETECTION USING VOCODER SIGNATURE EXTRACTION"**
+
+![](pics/Result.png)
 
 For the right reserved by the funding organizer, the source code of this model could not be distributed now. We will open it later. For experiment results, please refer to `Result.ipynb`.
 
