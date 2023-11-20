@@ -7,7 +7,7 @@ This is official implementation of our work **"SYNTHETIC SPEECH DETECTION USING 
 For the right reserved by the funding organizer, the source code of this model could not be distributed now. We will open it later. For experiment results, please refer to `Result.ipynb`.
 
 Model are deployed in this demo site
-[https://deepfake.phucdt.me/](https://deepfake.phucdt.me/). Please contact us for granting access to the demo system.
+[https://deepfake.aisrc.technology/](https://deepfake.aisrc.technology/). Please contact us for granting access to the demo system.
 
 phucdt[at]soongsil[dot]ac[dot]kr
 
