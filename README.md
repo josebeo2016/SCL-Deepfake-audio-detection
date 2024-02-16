@@ -1,15 +1,15 @@
 # SCL-Deepfake-audio-detection
 
-This is official implementation of our work **"SYNTHETIC SPEECH DETECTION USING VOCODER SIGNATURE EXTRACTION"**
+This is official implementation of our work **"Balance, Multiple Augmentation, and Re-synthesis: A Triad Training Strategy for Enhanced Audio Deepfake Detection"**
 
 ![](pics/Result.png)
 
 For the right reserved by the funding organizer, the source code of this model could not be distributed now. We will open it later. For experiment results, please refer to `Result.ipynb`.
 
-Model are deployed in this demo site
+<!-- Model are deployed in this demo site
 [https://deepfake.aisrc.technology/](https://deepfake.aisrc.technology/). Please contact us for granting access to the demo system.
 
-phucdt[at]soongsil[dot]ac[dot]kr
+phucdt[at]soongsil[dot]ac[dot]kr -->
 
 # Reference
 * [SSL_Anti-spoofing](https://github.com/TakHemlata/SSL_Anti-spoofing)
