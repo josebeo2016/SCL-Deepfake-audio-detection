@@ -1,0 +1,14 @@
+# conf-1 linear
+model:
+  name: wav2vec2_linear
+  flag_fix_ssl: false
+  contra_mode: 'all' # 'one' or 'all'
+  loss_type: 1 # 1: 2loss, 2: loss emb only, 3: loss final hidden state only
+data:
+  name: 'asvspoof_2019' # [asvspoof_2019, eval_only]: eval_only for other type of dataset, see datautils/eval_only.py
+  kwargs:
+    vocoders: ['hifigan', 'hn-sinc-nsf', 'hn-sinc-nsf-hifi', 'waveglow', 'melgan']
+    augmentation_methods: ["RawBoost12"]
+    num_additional_real: 2
+    trim_length: 64000
+    wav_samp_rate: 16000

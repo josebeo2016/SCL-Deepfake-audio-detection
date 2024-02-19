@@ -1,0 +1,23 @@
+# conf-2-linear
+model:
+  name: wav2vec2_linear_nll
+  flag_fix_ssl: false
+  contra_mode: 'all' # 'one' or 'all'
+  loss_type: 1 # 1: 2loss, 2: loss emb only, 3: loss final hidden state only
+  resnet:
+    num_nodes: 3
+    enc_dim: 256
+    resnet_type: '18'
+    nclasses: 2
+data:
+  name: 'asvspoof_2019_aug' # [asvspoof_2019_aug, eval_only]: eval_only for other type of dataset, see datautils/eval_only.py
+  kwargs:
+    vocoders: ['hifigan', 'hn-sinc-nsf', 'hn-sinc-nsf-hifi', 'waveglow', 'melgan']
+    augmentation_methods: ["RawBoost12", "background_noise_wrapper", "pitch_wrapper", "reverb_wrapper"]
+    num_additional_real: 0
+    trim_length: 64000
+    wav_samp_rate: 16000
+    online_aug: true
+    aug_dir: '/datab/phucdt/Asvspoof_aug/asvspoof2019' # path to augmented data (temp data for online augmentation, stored dir for offline augmentation)
+    noise_path: '/dataa/phucdt/vocodetect/Supcon-voco/datautils/audio_augmentor/musan' # path to noise data
+    rir_path: '/dataa/phucdt/vocodetect/Supcon-voco/datautils/audio_augmentor/RIRS_NOISES' # path to rir data
