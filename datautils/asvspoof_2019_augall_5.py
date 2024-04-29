@@ -61,7 +61,9 @@ def pad(x, padding_type, max_len=64600):
 
 class Dataset_for(Dataset):
     def __init__(self, args, list_IDs, labels, base_dir, algo=5, vocoders=[], 
-                 augmentation_methods=[], num_additional_real=2, num_additional_spoof=2, trim_length=64000, wav_samp_rate=16000, noise_path=None, rir_path=None, aug_dir=None, online_aug=False):
+                 augmentation_methods=[], num_additional_real=2, num_additional_spoof=2, 
+                 trim_length=64000, wav_samp_rate=16000, noise_path=None, rir_path=None, 
+                 aug_dir=None, online_aug=False, repeat_pad=True):
         """
         Args:
             list_IDs (string): Path to the .lst file with real audio filenames.
@@ -79,7 +81,7 @@ class Dataset_for(Dataset):
         # list available spoof samples (only .wav files)
         self.spoof_dir = os.path.join(base_dir, 'spoof')
         self.spoof_list = [f for f in os.listdir(self.spoof_dir) if os.path.isfile(os.path.join(self.spoof_dir, f)) and (f.endswith('.wav') or f.endswith('.flac'))]
-        self.repeat_pad = True
+        self.repeat_pad = repeat_pad
         self.trim_length = trim_length
         self.sample_rate = wav_samp_rate
 
@@ -151,10 +153,11 @@ class Dataset_for(Dataset):
         return self.list_IDs[idx], batch_data, Tensor(label)
 
 class Dataset_for_eval(Dataset):
-    def __init__(self, list_IDs, base_dir):
+    def __init__(self, list_IDs, base_dir, padding_type="zero"):
         self.list_IDs = list_IDs
         self.base_dir = os.path.join(base_dir, 'eval')
         self.cut=64600 # take ~4 sec audio (64600 samples)
+        self.padding_type = padding_type
     def __len__(self):
         return len(self.list_IDs)
     
@@ -162,7 +165,7 @@ class Dataset_for_eval(Dataset):
             
         utt_id = self.list_IDs[index]
         X, fs = librosa.load(self.base_dir + "/" + utt_id, sr=16000)
-        X_pad = pad(X,"zero",self.cut)
+        X_pad = pad(X,self.padding_type,self.cut)
         x_inp = Tensor(X_pad)
         return x_inp, utt_id
 

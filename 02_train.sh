@@ -18,12 +18,16 @@
 
 # the random seed
 SEED=$1
+# SEED=1234
 # the name of the training config file 
 CONFIG=$2
+# CONFIG='configs/conf-5-linear.yaml'
 # path to the directory of the model
 DATABASE_PATH=$3
+# DATABASE_PATH='DATA/asvspoof_2019_supcon'
 # flag
 CMT=$4
+# CMT='conf-5-linear-M-20240207'
 
 if [ "$#" -ne 4 ]; then
     echo -e "Invalid input arguments. Please check the doc of script."
@@ -48,9 +52,9 @@ com="CUDA_VISIBLE_DEVICES=0 python main.py
     --config ${CONFIG}
     --database_path ${DATABASE_PATH}
     --batch_size 1
-    --comment "${CMT}"
+    --comment '${CMT}'
     --num_epochs 80
-    --lr 0.0000001"
+    --padding_type repeat"
 
 echo ${com}
 eval ${com}

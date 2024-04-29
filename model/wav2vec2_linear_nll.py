@@ -8,12 +8,8 @@ import torch.nn.functional as F
 from torch import Tensor
 import fairseq
 import os
-try:
-    from model.loss_metrics import supcon_loss
-    from model.xlsr import SSLModel
-except:
-    from .loss_metrics import supcon_loss
-    from .xlsr import SSLModel
+from model.loss_metrics import supcon_loss
+from .xlsr import SSLModel
 
 ___author__ = "Hemlata Tak"
 __email__ = "tak@eurecom.fr"
@@ -141,83 +137,56 @@ class Model(nn.Module):
         return output
     
     def forward(self, x_big):
-        
+        # make labels to be a tensor of [bz]
+        # labels = labels.squeeze(0)
+
         if (self.is_train):
             # x_big is a tensor of [1, length, bz]
             # convert to [bz, length]
-            x_big = x_big.squeeze(0).transpose(0,1)
+            # x_big = x_big.squeeze(0).transpose(0,1)
             output, feats, emb = self._forward(x_big)
+            # calculate the loss
             return output, feats, emb
         else:
             # in inference mode, we don't need the emb
             # the x_big now is a tensor of [bz, length]
+            print("Inference mode")
+            
             return self._forward(x_big)
         
     
-    def loss(self, output, feats, emb, labels, config):
+    def loss(self, output, feats, emb, labels, config, info=None):
         
         real_bzs = output.shape[0]
         n_views = 1.0
+        loss_CE = torch.nn.CrossEntropyLoss()
+        
+        sim_metric_seq = lambda mat1, mat2: torch.bmm(
+            mat1.permute(1, 0, 2), mat2.permute(1, 2, 0)).mean(0)
         
         # print("output.shape", output.shape)
         # print("labels.shape", labels.shape)
-        L_CE = self.loss_CE(output, labels)
+        L_CE = 1/real_bzs *loss_CE(output, labels)
         
         # reshape the feats to match the supcon loss format
         feats = feats.unsqueeze(1)
         # print("feats.shape", feats.shape)
-        L_CF1 = supcon_loss(feats, labels=labels, contra_mode=self.contra_mode, sim_metric=self.sim_metric_seq)
+        L_CF1 = 1/real_bzs * supcon_loss(feats, labels=labels, contra_mode=config['model']['contra_mode'], sim_metric=sim_metric_seq)
         
         # reshape the emb to match the supcon loss format
         emb = emb.unsqueeze(1)
         emb = emb.unsqueeze(-1)
         # print("emb.shape", emb.shape)
-        L_CF2 = supcon_loss(emb, labels=labels, contra_mode=self.contra_mode, sim_metric=self.sim_metric_seq)
-        if self.loss_type == 1:
+        L_CF2 = 1/real_bzs *supcon_loss(emb, labels=labels, contra_mode=config['model']['contra_mode'], sim_metric=sim_metric_seq)
+        
+        if config['model']['loss_type'] == 1:
             return {'L_CE':L_CE, 'L_CF1':L_CF1, 'L_CF2':L_CF2}
-        elif self.loss_type == 2:
+        elif config['model']['loss_type'] == 2:
             return {'L_CE':L_CE, 'L_CF1':L_CF1}
-        elif self.loss_type == 3:
+        elif config['model']['loss_type'] == 3:
             return {'L_CE':L_CE, 'L_CF2':L_CF2}
         # ablation study
-        elif self.loss_type == 4:
+        elif config['model']['loss_type'] == 4:
             return {'L_CE':L_CE}
-        elif self.loss_type == 5:
+        elif config['model']['loss_type'] == 5:
             return {'L_CF1':L_CF1, 'L_CF2':L_CF2}
-        
-    def loss_function_(self, batch_size, anchor_name, anchor, positive, negative):
-        # anchor: tensor (b,H) where H is the feature dimension, b is the batch size
-        # positive: tensor (b,K,H) where  K is the number of augmentations
-        # negative: tensor (b,S,H) where S is the number of vocoded samples
-
-        total = torch.cat((positive, negative), dim=0) # Combining positive and negative samples
-        loss = 0
-
-        # iterate over the batch
-        for i in range(batch_size):
-            a = anchor[i,:].unsqueeze(0) # Selecting anchor sample
-            P = positive[i*batch_size:(i+1)*batch_size,:] # getting positive samples for anchor i
-            N = negative[i*batch_size:(i+1)*batch_size,:] # getting negative samples for anchor i
-
-            # term 1
-            num1 = torch.exp(torch.mm(a, P.t())) # f(x_i, x_p) = x_i* x_p
-            den1 = torch.exp(torch.mm(a, total[i*batch_size:(i+1)*batch_size,:].t())).sum()
-            term_1 = - torch.log(num1 / den1+ 1e-7).sum()
-
-            # term 2
-            term_2 = 0
-            for j in range(N.shape[0]):
-                for k in range(j+1,N.shape[0]):
-                    v1 = N[j,:].unsqueeze(0) # getting vocoded sample j
-                    v2 = N[k,:].unsqueeze(0) # getting vocoded sample k
-                    num2 = torch.exp(torch.mm(v1, v2.t())) # f(x_v, x_q) = x_v * x_q
-                    den2 = torch.exp(torch.mm(v1, total[i*batch_size:(i+1)*batch_size,:].t())).sum()
-                    term_2 += - torch.log(num2 / den2 + 1e-7)
-            term_2 /=  N.shape[0] * (N.shape[0] - 1)
-
-            loss += term_1 + term_2
-
-        loss /= batch_size
-
-        return loss
-    

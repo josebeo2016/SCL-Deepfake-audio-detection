@@ -20,14 +20,19 @@
 
 # the name of the training config file (remember to modify the config file before evaluating)
 CONFIG=$1
+# CONFIG='configs/conf-5-linear.yaml'
 # evaluation data path
 DATABASE_PATH=$2
+# DATABASE_PATH='DATA/asvspoof_2019_supcon'
 # path to the directory of the model
 BATCH_SIZE=$3
+# BATCH_SIZE=64
 # Model path
 MODEL_PATH=$4
+# MODEL_PATH='out/model_80_1_1e-07_conf-5-linear/epoch_80.pth'
 # output path
 EVAL_OUTPUT=$5
+# EVAL_OUTPUT='docs/conf-5-linear_epoch_80.txt'
 
 
 

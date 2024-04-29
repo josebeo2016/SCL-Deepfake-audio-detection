@@ -434,10 +434,10 @@ class Residual_block(nn.Module):
 
 
 class Model(nn.Module):
-    def __init__(self, args,device,emb = True):
+    def __init__(self, args,device, is_train = True):
         super().__init__()
         self.device = device
-        self.emb = emb
+        self.is_train = is_train
         
         # AASIST parameters
         filts = args['aasist']['filts']
@@ -598,7 +598,43 @@ class Model(nn.Module):
         
         last_hidden = self.drop(last_hidden)
         output = self.out_layer(last_hidden)
-        if (self.emb):
+        if (self.is_train):
             return output, last_hidden
         
         return output
+
+    def loss(self, output, feats, emb, labels, config, info=None):
+        
+        real_bzs = output.shape[0]
+        n_views = 1.0
+        loss_CE = torch.nn.CrossEntropyLoss()
+        
+        sim_metric_seq = lambda mat1, mat2: torch.bmm(
+            mat1.permute(1, 0, 2), mat2.permute(1, 2, 0)).mean(0)
+        
+        # print("output.shape", output.shape)
+        # print("labels.shape", labels.shape)
+        L_CE = 1/real_bzs *loss_CE(output, labels)
+        
+        # reshape the feats to match the supcon loss format
+        feats = feats.unsqueeze(1)
+        # print("feats.shape", feats.shape)
+        L_CF1 = 1/real_bzs * supcon_loss(feats, labels=labels, contra_mode=config['model']['contra_mode'], sim_metric=sim_metric_seq)
+        
+        # reshape the emb to match the supcon loss format
+        emb = emb.unsqueeze(1)
+        emb = emb.unsqueeze(-1)
+        # print("emb.shape", emb.shape)
+        L_CF2 = 1/real_bzs *supcon_loss(emb, labels=labels, contra_mode=config['model']['contra_mode'], sim_metric=sim_metric_seq)
+        
+        if config['model']['loss_type'] == 1:
+            return {'L_CE':L_CE, 'L_CF1':L_CF1, 'L_CF2':L_CF2}
+        elif config['model']['loss_type'] == 2:
+            return {'L_CE':L_CE, 'L_CF1':L_CF1}
+        elif config['model']['loss_type'] == 3:
+            return {'L_CE':L_CE, 'L_CF2':L_CF2}
+        # ablation study
+        elif config['model']['loss_type'] == 4:
+            return {'L_CE':L_CE}
+        elif config['model']['loss_type'] == 5:
+            return {'L_CF1':L_CF1, 'L_CF2':L_CF2}

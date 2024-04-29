@@ -1,14 +1,20 @@
-# conf-1 linear
+# 1 anchor, 1 aug anchor, 2 other real, 2 aug real, 3 spoof, 3 aug spoof
 model:
-  name: wav2vec2_linear
+  name: wav2vec2_linear_nll
   flag_fix_ssl: false
   contra_mode: 'all' # 'one' or 'all'
-  loss_type: 1 # 1: 2loss, 2: loss emb only, 3: loss final hidden state only
+  loss_type: 1 # 1: 2loss, 2: loss emb only, 3: loss final hidden state only, 4: LCE only, 5: Lsupcon only
+
 data:
-  name: 'asvspoof_2019' # [asvspoof_2019, eval_only]: eval_only for other type of dataset, see datautils/eval_only.py
+  name: 'SCL_normal'
   kwargs:
-    vocoders: ['hifigan', 'hn-sinc-nsf', 'hn-sinc-nsf-hifi', 'waveglow', 'melgan']
+    vocoders: ['hifigan', 'hn-sinc-nsf-hifi', 'waveglow']
     augmentation_methods: ["RawBoost12"]
     num_additional_real: 2
+    num_additional_spoof: 3
     trim_length: 64000
     wav_samp_rate: 16000
+    online_aug: true
+    aug_dir: '/tmp/asvspoof2019' # path to augmented data (temp data for online augmentation, stored dir for offline augmentation)
+    noise_path: '/tmp/musan' # path to noise data
+    rir_path: '/tmp/RIRS_NOISES' # path to rir data
