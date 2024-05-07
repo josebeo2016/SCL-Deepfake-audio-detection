@@ -21,13 +21,13 @@ SEED=$1
 # SEED=1234
 # the name of the training config file 
 CONFIG=$2
-# CONFIG='configs/conf-5-linear.yaml'
+# CONFIG='configs/conf-3-linear.yaml'
 # path to the directory of the model
 DATABASE_PATH=$3
 # DATABASE_PATH='DATA/asvspoof_2019_supcon'
 # flag
 CMT=$4
-# CMT='conf-5-linear-M-20240207'
+# CMT='conf-3-linear-asvspoof19'
 
 if [ "$#" -ne 4 ]; then
     echo -e "Invalid input arguments. Please check the doc of script."
@@ -47,7 +47,7 @@ fi
 echo -e "${RED}Training starts${NC}"
 echo -e "Training log are writing to $PWD/logs/model_80_1_1e-07_${CMT}"
 echo -e "Model save to $PWD/out/model_80_1_1e-07_${CMT}"
-com="CUDA_VISIBLE_DEVICES=0 python main.py
+com="python main.py
     --seed ${SEED}
     --config ${CONFIG}
     --database_path ${DATABASE_PATH}

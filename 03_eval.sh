@@ -55,7 +55,7 @@ echo -e "${RED}Evaluation starts${NC}"
 
 
 # Note that you should change the config file before evaluating
-com="CUDA_VISIBLE_DEVICES=0 python main.py
+com="python main.py
     --config ${CONFIG}
     --database_path ${DATABASE_PATH}
     --batch_size ${BATCH_SIZE}

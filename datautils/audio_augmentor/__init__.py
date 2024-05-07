@@ -3,7 +3,8 @@ from .pitch import PitchAugmentor
 from .reverb import ReverbAugmentor
 from .speed import SpeedAugmentor
 from .volume import VolumeAugmentor
-from .telephone import TelephoneEncodingAugmentor
+from .telephone import TelephoneEncodingAugmentor # this is unstabled, requires torch 2.1.0
+from .gaussian import GaussianAugmentor
 
 # from . import utils
 
@@ -18,7 +19,7 @@ from .__version__ import (
     __version__,
 )
 
-SUPPORTED_AUGMENTORS = ['background_noise', 'pitch', 'speed', 'volume', 'reverb']
+SUPPORTED_AUGMENTORS = ['background_noise', 'pitch', 'speed', 'volume', 'reverb', 'gaussian_noise', 'telephone']
 
 import logging.config
 LOGGING = {

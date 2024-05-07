@@ -18,6 +18,6 @@ data:
     trim_length: 64000
     wav_samp_rate: 16000
     online_aug: true
-    aug_dir: '/datab/phucdt/Asvspoof_aug/asvspoof2019'
-    noise_path: '/dataa/phucdt/vocodetect/Supcon-voco/datautils/audio_augmentor/musan'
-    rir_path: '/dataa/phucdt/vocodetect/Supcon-voco/datautils/audio_augmentor/RIRS_NOISES'
+    aug_dir: '/tmp/asvspoof2019' # path to augmented data (temp data for online augmentation, stored dir for offline augmentation)
+    noise_path: '/tmp/musan' # path to noise data
+    rir_path: '/tmp/RIRS_NOISES' # path to rir data

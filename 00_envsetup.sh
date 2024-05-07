@@ -11,13 +11,16 @@ if [ $retVal -ne 0 ]; then
     echo "Install conda environment ${ENVNAME}"
     
     # conda env
-    conda create -n ${ENVNAME} python=3.7 pip --yes
+    conda create -n ${ENVNAME} python=3.9 pip --yes
     conda activate ${ENVNAME}
 
     # install pytorch
     echo "===========Install pytorch==========="
     # conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.7 -c pytorch -c nvidia -y
-    pip install torch==1.8.1+cu111 torchvision==0.9.1+cu111 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
+    # pip install torch==1.8.1+cu111 torchvision==0.9.1+cu111 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
+    pip install torch==2.2.0 torchvision==0.17.0 torchaudio==2.2.0 --index-url https://download.pytorch.org/whl/cu118
+
+
 
     # git clone fairseq
     #  fairseq 0.10.2 on pip does not work

@@ -30,15 +30,13 @@ def genList(dir_meta, is_train=False, is_eval=False, is_dev=False):
     if (is_train):
         for line in l_meta:
             key = line.strip().split()
-            if ("LA_T" in key[0]):
-                file_list.append(key[0])
+            file_list.append(key[0])
         return [],file_list
     
     if (is_dev):
         for line in l_meta:
             key = line.strip().split()
-            if ("LA_D" in key[0]):
-                file_list.append(key[0])
+            file_list.append(key[0])
         return [],file_list
     
     elif(is_eval):
@@ -63,7 +61,9 @@ def pad(x, padding_type, max_len=64600):
 
 class Dataset_for(Dataset):
     def __init__(self, args, list_IDs, labels, base_dir, algo=5, vocoders=[], 
-                 augmentation_methods=[], num_additional_real=2, trim_length=64000, wav_samp_rate=16000, noise_path=None, rir_path=None, aug_dir=None, online_aug=False):
+                 augmentation_methods=[], num_additional_real=2, trim_length=64000, 
+                 wav_samp_rate=16000, noise_path=None, rir_path=None, aug_dir=None, 
+                 online_aug=False, repeat_pad=True):
         """
         Args:
             list_IDs (string): Path to the .lst file with real audio filenames.
@@ -81,6 +81,7 @@ class Dataset_for(Dataset):
         
         self.trim_length = trim_length
         self.sample_rate = wav_samp_rate
+        self.repeat_pad = repeat_pad
 
         self.vocoders = vocoders
         print("vocoders:", vocoders)
@@ -131,7 +132,9 @@ class Dataset_for(Dataset):
         # merge all the data
         batch_data = [np.expand_dims(real_audio, axis=1)] + augmented_audios + additional_audios + vocoded_audios + augmented_vocoded_audios
         batch_data = nii_wav_aug.batch_pad_for_multiview(
-                batch_data, self.sample_rate, self.trim_length, random_trim_nosil=True)
+            # batch_data, self.sample_rate, self.trim_length, random_trim_nosil=True)
+                batch_data, self.sample_rate, self.trim_length, random_trim_nosil=True, repeat_pad=self.repeat_pad)
+                
         batch_data = np.concatenate(batch_data, axis=1)
         # print("batch_data.shape", batch_data.shape)
         
@@ -143,10 +146,11 @@ class Dataset_for(Dataset):
         return self.list_IDs[idx], batch_data, Tensor(label)
 
 class Dataset_for_eval(Dataset):
-    def __init__(self, list_IDs, base_dir):
+    def __init__(self, list_IDs, base_dir, padding_type="zero"):
         self.list_IDs = list_IDs
         self.base_dir = os.path.join(base_dir, 'eval')
         self.cut=64600 # take ~4 sec audio (64600 samples)
+        self.padding_type = padding_type
     def __len__(self):
         return len(self.list_IDs)
     
@@ -154,7 +158,7 @@ class Dataset_for_eval(Dataset):
             
         utt_id = self.list_IDs[index]
         X, fs = librosa.load(self.base_dir + "/" + utt_id, sr=16000)
-        X_pad = pad(X,"zero",self.cut)
+        X_pad = pad(X,self.padding_type,self.cut)
         x_inp = Tensor(X_pad)
         return x_inp, utt_id
 

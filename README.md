@@ -11,6 +11,11 @@ for Enhanced Audio Deepfake Detection"
 bash 00_envsetup.sh
 bash 01_download_pretrained.sh
 ```
+
+* Noise data using in this repo is [MUSAN](https://www.openslr.org/17/) and [RIRS_NOISES](https://www.openslr.org/28/)
+
+Please download those dataset by yourself.
+
 ### Dataset
 We do not redistributed training data as:
 * You should download [ASVspoof 2019](https://doi.org/10.7488/ds/2555) dataset and store bona fide samples online in `DATA/asvspoof_2019_supcon/bonafide`. We do not re-distribute that dataset.
@@ -50,29 +55,32 @@ DATA
 
 ## Configurations
 Configuration should be checked and modified before further training or evaluating. Please read configuration files carefully.
+
+- The MUSAN and RIR_NOISES location should be changed
+
 By default, these configurations is set for training.
 ## Training
 ```
-bash 02_train.sh <seed> <config> <data_path> <comment>
+CUDA_VISIBLE_DEVICES=0 bash 02_train.sh <seed> <config> <data_path> <comment>
 ```
 For example:
 ```
-bash 02_train.sh 1234 configs/conf-3-linear.yaml DATA/asvspoof_2019_supcon "conf-3-linear-1234"
+CUDA_VISIBLE_DEVICES=0 bash 02_train.sh 1234 configs/conf-3-linear.yaml DATA/asvspoof_2019_supcon "conf-3-linear-1234"
 ```
 
 ## Evaluating
 ```
-bash 03_eval <config> <data_path> <batch_size> <model_path> <eval_output>
+CUDA_VISIBLE_DEVICES=0 bash 03_eval <config> <data_path> <batch_size> <model_path> <eval_output>
 ```
 For example:
 ```
-bash 03_eval.sh configs/conf-3-linear.yaml DATA/asvspoof_2019_supcon 128 out/model_80_1_1e-07_conf-3-linear/epoch_80.pth docs/la19.txt
+CUDA_VISIBLE_DEVICES=0 bash 03_eval.sh configs/conf-3-linear.yaml DATA/asvspoof_2019_supcon 128 out/model_80_1_1e-07_conf-3-linear/epoch_80.pth docs/la19.txt
 ```
 
-* Download pre-trained of our conf-3-linear (best model) [hear](https://drive.google.com/drive/folders/1F1Wbc_WCdXAOlnly-pgjq1seCtkXgOZP)
+* Download pre-trained of our conf-3-linear (best model) [here](https://drive.google.com/drive/folders/1F1Wbc_WCdXAOlnly-pgjq1seCtkXgOZP)
 To calculate score with pretrained model:
 ```
-bash 03_eval.sh configs/conf-3-linear.yaml DATA/asvspoof_2021_DF 128 pretrained/conf-3-linear.pth docs/df21.txt
+CUDA_VISIBLE_DEVICES=0 bash 03_eval.sh configs/conf-3-linear.yaml DATA/asvspoof_2021_DF 128 pretrained/conf-3-linear.pth docs/df21.txt
 ```
 
 ## Calculate EER

@@ -7,7 +7,7 @@
 url="https://dl.fbaipublicfiles.com/fairseq/wav2vec/xlsr2_300m.pt"
 
 # The folder where the downloaded file should be stored
-directory="model/pretrained/"
+directory="./pretrained/"
 filename="xlsr2_300m.pt"
 # Check if the directory exists. If not, create the directory
 if [ ! -d "$directory" ]; then
