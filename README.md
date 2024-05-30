@@ -79,6 +79,7 @@ CUDA_VISIBLE_DEVICES=0 bash 03_eval.sh configs/conf-3-linear.yaml DATA/asvspoof_
 
 * Download pre-trained of our conf-3-linear (best model) [here](https://drive.google.com/drive/folders/1F1Wbc_WCdXAOlnly-pgjq1seCtkXgOZP)
 To calculate score with pretrained model:
+Modify the config file, change the data name to "eval_only" for DF21, Inwild dataset. For LA19, leave it as default.
 ```
 CUDA_VISIBLE_DEVICES=0 bash 03_eval.sh configs/conf-3-linear.yaml DATA/asvspoof_2021_DF 128 pretrained/conf-3-linear.pth docs/df21.txt
 ```
