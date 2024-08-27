@@ -1,0 +1,19 @@
+# 1 anchor, 3 aug anchor, 1 other real, 3 vocoded, 3 aug vocoded - with RawBoost only
+model:
+  name: wav2vec2_linear_nll
+  flag_fix_ssl: false
+  contra_mode: 'all' # 'one' or 'all'
+  loss_type: 1 # 1: 2loss, 2: loss emb only, 3: loss final hidden state only, 4: LCE only, 5: Lsupcon only
+
+data:
+  name: 'asvspoof_2019_augall_3_adv' # [asvspoof_2019_augall_3, eval_only]: eval_only for other type of dataset, see datautils/eval_only.py
+  kwargs:
+    vocoders: ['hifigan', 'hn-sinc-nsf-hifi', 'waveglow']
+    augmentation_methods: ["RawBoost12", "background_noise_wrapper", "reverb_wrapper"]
+    num_additional_real: 1
+    trim_length: 64000
+    wav_samp_rate: 16000
+    online_aug: true
+    aug_dir: '/tmp/asvspoof2019' # path to augmented data (temp data for online augmentation, stored dir for offline augmentation)
+    noise_path: '/tmp/musan' # path to noise data
+    rir_path: '/tmp/RIRS_NOISES' # path to rir data
